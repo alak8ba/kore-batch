@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="02-create-individu-table" author="alak8ba">
+        <createTable tableName="T_INDIVIDU">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="NUM_REFERENCE" type="VARCHAR(20)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="TYPE_REFERENCE" type="VARCHAR(10)"/>
+            <column name="NIR" type="VARCHAR(13)"/>
+            <column name="CIVILITE" type="VARCHAR(10)"/>
+            <column name="NOM_PRENOM" type="VARCHAR(80)"/>
+            <column name="ADRESSE_LIGNE1" type="VARCHAR(38)"/>
+            <column name="ADRESSE_LIGNE2" type="VARCHAR(38)"/>
+            <column name="CODE_PAYS" type="VARCHAR(5)"/>
+            <column name="PAYS" type="VARCHAR(27)"/>
+            <column name="DATE_REFERENCE" type="VARCHAR(20)"/>
+            <column name="STATUT" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_TRAITEMENT" type="TIMESTAMP"/>
+            <column name="MESSAGE_ERREUR" type="VARCHAR(500)"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

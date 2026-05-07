@@ -5,6 +5,8 @@ spring:
     username: batch_user
     password: batch_pass
 
+# Surcharger le fichier via --inputFile=/chemin/vers/fichier au lancement
+
 logging:
   level:
     dev.kore.batch: DEBUG

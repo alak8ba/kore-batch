@@ -6,6 +6,6 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
 
     <include file="db/changelog/versions/v1.0.0/01-spring-batch-schema.xml"/>
-    <include file="db/changelog/versions/v1.0.0/02-create-commande-table.xml"/>
+    <include file="db/changelog/versions/v1.0.0/02-create-individu-table.xml"/>
 
 </databaseChangeLog>

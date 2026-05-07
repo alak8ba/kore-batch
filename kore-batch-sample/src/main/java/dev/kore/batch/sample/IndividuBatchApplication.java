@@ -11,19 +11,22 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 
 /**
- * Lancement : java -jar kore-batch-sample.jar --inputFile=/data/commandes.csv
+ * Batch de traitement d'individus depuis un fichier à largeur fixe.
+ *
+ * Lancement :
+ *   java -jar kore-batch-sample.jar --inputFile=/chemin/vers/fichier
  */
 @SpringBootApplication(scanBasePackages = {"dev.kore.batch"})
-public class SampleBatchApplication extends BatchLauncher {
+public class IndividuBatchApplication extends BatchLauncher {
 
-    public SampleBatchApplication(JobLauncher jobLauncher, Job job,
-                                   ApplicationContext applicationContext,
-                                   BatchHealthAggregator healthAggregator) {
+    public IndividuBatchApplication(JobLauncher jobLauncher, Job job,
+                                     ApplicationContext applicationContext,
+                                     BatchHealthAggregator healthAggregator) {
         super(jobLauncher, job, applicationContext, healthAggregator);
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(SampleBatchApplication.class, args);
+        SpringApplication.run(IndividuBatchApplication.class, args);
     }
 
     @Override
@@ -34,6 +37,6 @@ public class SampleBatchApplication extends BatchLauncher {
                 return;
             }
         }
-        builder.addString("inputFile", "default-input.csv");
+        throw new TechnicalException("Parametre obligatoire manquant : --inputFile=/chemin/vers/fichier");
     }
 }

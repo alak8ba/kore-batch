@@ -1,12 +1,13 @@
 package dev.kore.batch.sample.config;
 
 import dev.kore.batch.listener.BatchJobExecutionListener;
-import dev.kore.batch.sample.aggregator.CommandeAggregator;
-import dev.kore.batch.sample.dto.CommandeDto;
-import dev.kore.batch.sample.dto.CommandeResultDto;
-import dev.kore.batch.sample.processor.CommandeItemProcessor;
-import dev.kore.batch.sample.reader.CommandeItemReader;
-import dev.kore.batch.sample.writer.CommandeItemWriter;
+import dev.kore.batch.sample.aggregator.IndividuAggregator;
+import dev.kore.batch.sample.dto.AssureDto;
+import dev.kore.batch.sample.dto.AssureResultDto;
+import dev.kore.batch.sample.listener.TraitementAssuresStepListener;
+import dev.kore.batch.sample.processor.AssureItemProcessor;
+import dev.kore.batch.sample.reader.AssureItemReader;
+import dev.kore.batch.sample.writer.AssureItemWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -28,17 +29,18 @@ public class BatchConfiguration {
     private final PlatformTransactionManager transactionManager;
     private final ThreadPoolTaskExecutor taskExecutor;
     private final BatchJobExecutionListener jobExecutionListener;
-    private final CommandeAggregator aggregator;
-    private final CommandeItemReader reader;
-    private final CommandeItemProcessor processor;
-    private final CommandeItemWriter writer;
+    private final IndividuAggregator aggregator;
+    private final AssureItemReader reader;
+    private final AssureItemProcessor processor;
+    private final AssureItemWriter writer;
+    private final TraitementAssuresStepListener stepListener;
 
     @Value("${batch.partitioning.grid-size:4}")
     private int gridSize;
 
     @Bean
-    public Job traitementCommandesJob(Step partitionStep) {
-        return new JobBuilder("traitementCommandesJob", jobRepository)
+    public Job traitementIndividusJob(Step partitionStep) {
+        return new JobBuilder("traitementIndividusJob", jobRepository)
                 .listener(jobExecutionListener)
                 .start(partitionStep)
                 .build();
@@ -46,8 +48,8 @@ public class BatchConfiguration {
 
     @Bean
     public Step partitionStep(Step workerStep) {
-        return new StepBuilder("traitementCommandes-partition", jobRepository)
-                .partitioner("traitementCommandes-worker", new SimplePartitioner())
+        return new StepBuilder("traitementIndividus-partition", jobRepository)
+                .partitioner("traitementIndividus-worker", new SimplePartitioner())
                 .step(workerStep)
                 .aggregator(aggregator)
                 .taskExecutor(taskExecutor)
@@ -57,11 +59,12 @@ public class BatchConfiguration {
 
     @Bean
     public Step workerStep() {
-        return new StepBuilder("traitementCommandes-worker", jobRepository)
-                .<CommandeDto, CommandeResultDto>chunk(10, transactionManager)
+        return new StepBuilder("traitementIndividus-worker", jobRepository)
+                .<AssureDto, AssureResultDto>chunk(10, transactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
+                .listener(stepListener)
                 .build();
     }
 }
