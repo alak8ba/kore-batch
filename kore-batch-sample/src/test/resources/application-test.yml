@@ -1,0 +1,13 @@
+spring:
+  batch:
+    jdbc:
+      initialize-schema: never
+  liquibase:
+    enabled: true
+  jpa:
+    open-in-view: false
+
+logging:
+  level:
+    dev.kore.batch: DEBUG
+    org.springframework.batch: DEBUG

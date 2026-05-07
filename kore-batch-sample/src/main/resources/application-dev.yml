@@ -7,6 +7,6 @@ spring:
 
 logging:
   level:
-    fr.kore.batch: DEBUG
+    dev.kore.batch: DEBUG
     org.springframework.batch: DEBUG
     org.springframework.jdbc: DEBUG

@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: batchdb_test
+          POSTGRES_USER: batch_user
+          POSTGRES_PASSWORD: batch_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build socle (kore-batch)
+        run: mvn -B install -pl kore-batch -am -DskipTests
+
+      - name: Tests unitaires
+        run: mvn -B test -pl kore-batch-sample
+
+      - name: Tests d'intégration (Testcontainers)
+        run: mvn -B failsafe:integration-test failsafe:verify -pl kore-batch-sample
+        env:
+          SPRING_PROFILES_ACTIVE: test
+
+      - name: Upload rapport de tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            kore-batch-sample/target/surefire-reports/
+            kore-batch-sample/target/failsafe-reports/
+          retention-days: 7

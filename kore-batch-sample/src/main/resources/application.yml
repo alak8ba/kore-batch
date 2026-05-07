@@ -7,11 +7,12 @@ spring:
     job:
       enabled: false
     jdbc:
-      initialize-schema: never  # Géré par Liquibase
+      initialize-schema: never
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: none
 
@@ -21,7 +22,17 @@ batch:
     queue-capacity: 50
     grid-size: 4
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus,metrics,info
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      environment: ${spring.profiles.active:default}
+
 logging:
   level:
-    fr.kore.batch: INFO
+    dev.kore.batch: INFO
     org.springframework.batch: INFO

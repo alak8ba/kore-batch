@@ -18,7 +18,7 @@ batch:
 
 logging:
   level:
-    fr.kore.batch: INFO
+    dev.kore.batch: INFO
     org.springframework.batch: WARN
   file:
     name: /var/log/kore-batch/kore-batch-sample.log
