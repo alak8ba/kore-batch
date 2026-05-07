@@ -1,6 +1,7 @@
 package dev.kore.batch.sample;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -12,6 +13,15 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @ActiveProfiles("test")
 public abstract class AbstractIntegrationTest {
+
+    /**
+     * On mocke SampleBatchApplication pour éviter que CommandLineRunner.run()
+     * soit appelé au démarrage du contexte de test — ce qui déclencherait
+     * System.exit() et tuerait la JVM de test.
+     * Les tests lancent le job manuellement via JobLauncherTestUtils.
+     */
+    @MockBean
+    SampleBatchApplication sampleBatchApplication;
 
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
