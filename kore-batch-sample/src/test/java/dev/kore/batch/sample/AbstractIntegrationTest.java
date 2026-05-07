@@ -15,7 +15,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public abstract class AbstractIntegrationTest {
 
     static {
+        // Desactive Ryuk (cleanup container) qui pose probleme sur Windows WSL2
         System.setProperty("TESTCONTAINERS_RYUK_DISABLED", "true");
+        // Force Docker via TCP (Docker Desktop WSL2 expose le daemon sur 2375)
+        System.setProperty("DOCKER_HOST", "tcp://localhost:2375");
     }
 
     @MockBean
