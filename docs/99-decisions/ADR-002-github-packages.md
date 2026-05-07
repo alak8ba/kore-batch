@@ -1,12 +1,8 @@
-# ADR-002 — GitHub Packages à la place de Nexus
-
-## Statut
-
-Accepté
+# ADR-002 - GitHub Packages à la place de Nexus
 
 ## Contexte
 
-Le socle `kore-batch` doit être publié dans un registry Maven pour être consommé par les projets métier. L'ancien stack utilisait un Nexus interne (inaccessible hors réseau SNCF).
+Le socle `kore-batch` doit être publié dans un registry Maven pour être consommé par les projets métier. L'ancien stack utilisait un Nexus interne inaccessible hors réseau local.
 
 ## Décision
 
@@ -14,7 +10,7 @@ Utiliser **GitHub Packages** comme registry Maven.
 
 ## Raisons
 
-- Intégré nativement à GitHub Actions — pas de configuration externe
+- Intégré nativement à GitHub Actions : pas de configuration externe
 - Authentification via `GITHUB_TOKEN` automatique en CI
 - Cohérent avec l'écosystème KORE (tout sur GitHub)
 - Gratuit pour les projets publics

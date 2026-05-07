@@ -23,8 +23,8 @@ Le reader charge 5 commandes dont 2 invalides :
 |---|---|---|---|
 | CMD-001 | CLIENT-A | 150.00 | OK |
 | CMD-002 | CLIENT-B | 75.50 | OK |
-| CMD-003 | (vide) | 200.00 | KO — ClientId manquant |
-| CMD-004 | CLIENT-D | -10.00 | KO — Montant invalide |
+| CMD-003 | (vide) | 200.00 | KO - ClientId manquant |
+| CMD-004 | CLIENT-D | -10.00 | KO - Montant invalide |
 | CMD-005 | CLIENT-E | 300.00 | OK |
 
 Résultat attendu : `nbOK=3, nbKO=2, nbErreursFonctionnelles=2`
@@ -33,37 +33,37 @@ Résultat attendu : `nbOK=3, nbKO=2, nbErreursFonctionnelles=2`
 
 ```
 Ligne de commande
-    │  --inputFile=/data/commandes.csv
-    ▼
+    |  --inputFile=/data/commandes.csv
+    v
 SampleBatchApplication.addJobParameters()
-    │
-    ▼
+    |
+    v
 traitementCommandesJob
-    │
-    ▼
+    |
+    v
 traitementCommandes-partition (SimplePartitioner, N threads)
-    │
-    ├── traitementCommandes-worker [thread 1]
-    │       CommandeItemReader.read()
-    │       CommandeItemProcessor.process()
-    │           └── FunctionalException → CommandeResultDto.ko()
-    │       CommandeItemWriter.write()
-    │       [synthese stockée dans ExecutionContext]
-    │
-    ├── ... [thread 2..N]
-    │
-    ▼
+    |
+    +-- traitementCommandes-worker [thread 1]
+    |       CommandeItemReader.read()
+    |       CommandeItemProcessor.process()
+    |           --> FunctionalException -> CommandeResultDto.ko()
+    |       CommandeItemWriter.write()
+    |       [synthese stockée dans ExecutionContext]
+    |
+    +-- ... [thread 2..N]
+    |
+    v
 CommandeAggregator.merge()
-    │  fusionne toutes les CommandeSyntheseDto
-    ▼
+    |  fusionne toutes les CommandeSyntheseDto
+    v
 ISynthese stockée dans JobExecutionContext
-    │
-    ▼
+    |
+    v
 BatchJobExecutionListener.afterJob()
-    │  log : total, OK, KO, erreurs
-    ▼
+    |  log : total, OK, KO, erreurs
+    v
 BatchLauncher.resolveExitCode()
-    │  System.exit(0 ou -1)
+    |  System.exit(0 ou -1)
 ```
 
 ## Modèle de données

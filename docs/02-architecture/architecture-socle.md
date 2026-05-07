@@ -10,8 +10,8 @@ Le diagramme ci-dessous illustre le modèle d'exécution standard de Spring Batc
 
 - Le **Job Scheduler** (cron, Control-M, CI) déclenche `run()` sur le **Job Launcher**
 - Le **Job Launcher** exécute le **Job** et persiste les métadonnées dans le **Job Repository** (PostgreSQL)
-- Chaque **Step** orchestre un cycle `read() → process() → write()` répété par chunk
-- Plusieurs steps peuvent s'enchaîner — ici deux steps parallèles illustrent le partitionnement
+- Chaque **Step** orchestre un cycle `read() -> process() -> write()` répété par chunk
+- Plusieurs steps peuvent s'enchaîner : ici deux steps parallèles illustrent le partitionnement
 - Le **File System** et la **Database** sont les sources/destinations typiques
 
 Dans `kore-batch`, le partitionnement parallèle découpe automatiquement le traitement en N workers qui exécutent chacun ce cycle indépendamment, avant agrégation par `AbstractBatchAggregator`.
@@ -21,32 +21,32 @@ Dans `kore-batch`, le partitionnement parallèle découpe automatiquement le tra
 ## Vue d'ensemble
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      kore-batch (socle)                     │
-│                                                             │
-│  ┌──────────────┐    ┌──────────────┐    ┌───────────────┐  │
-│  │ BatchLauncher│───►│  JobLauncher │───►│      Job      │  │
-│  │  (abstract)  │    │   (Spring)   │    │   (Spring)    │  │
-│  └──────────────┘    └──────────────┘    └──────┬────────┘  │
-│                                                 │           │
-│                                         ┌───────▼────────┐  │
-│                                         │  PartitionStep │  │
-│                                         └───────┬────────┘  │
-│                                    ┌────────────┴──────────┐│
-│                               Worker 1   ...   Worker N    ││
-│                               (Reader)         (Reader)    ││
-│                               (Processor)      (Processor) ││
-│                               (Writer)         (Writer)    ││
-│                                    └────────────┬──────────┘│
-│                                    ┌────────────▼──────────┐│
-│                                    │  AbstractBatchAggregator││
-│                                    │   merge(global, part.) ││
-│                                    └────────────┬──────────┘│
-│                                    ┌────────────▼──────────┐│
-│                                    │    ISynthese           ││
-│                                    │  (résultat global)     ││
-│                                    └───────────────────────┘│
-└─────────────────────────────────────────────────────────────┘
++--------------------------------------------------------------+
+|                      kore-batch (socle)                      |
+|                                                              |
+|  +----------------+    +--------------+    +---------------+ |
+|  | BatchLauncher  |-->>|  JobLauncher |-->>|      Job      | |
+|  |  (abstract)    |    |   (Spring)   |    |   (Spring)    | |
+|  +----------------+    +--------------+    +-------+-------+ |
+|                                                    |         |
+|                                           +--------v-------+ |
+|                                           |  PartitionStep | |
+|                                           +--------+-------+ |
+|                                    +-------+--------+------+ |
+|                               Worker 1   ...   Worker N     ||
+|                               (Reader)         (Reader)     ||
+|                               (Processor)      (Processor)  ||
+|                               (Writer)         (Writer)     ||
+|                                    +-------+--------+------+ |
+|                                    +-------v--------+------+ |
+|                                    |  AbstractBatchAggregator||
+|                                    |   merge(global, part.) ||
+|                                    +-------+--------+------+ |
+|                                    +-------v--------+------+ |
+|                                    |    ISynthese           ||
+|                                    |  (résultat global)     ||
+|                                    +------------------------+|
++--------------------------------------------------------------+
 ```
 
 ## Composants du socle
@@ -74,7 +74,7 @@ Le projet métier surcharge `addJobParameters()` pour injecter ses propres param
 
 Agrège les synthèses de chaque partition en une synthèse globale.
 
-Utilise un `Supplier<T>` (lambda) pour instancier la synthèse — remplace l'ancien `clazz.newInstance()` supprimé en Java 17+.
+Utilise un `Supplier<T>` (lambda) pour instancier la synthèse : remplace l'ancien `clazz.newInstance()` supprimé en Java 17+.
 
 Le projet métier étend cette classe et implémente `merge(global, partition)`.
 

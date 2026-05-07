@@ -10,7 +10,7 @@
 
 **K** comme Kouba. **ORE** comme core, le socle.
 
-KORE est un écosystème de socles Java open source. `kore-batch` est la brique dédiée au traitement batch — extraction, transformation, chargement de données en masse, avec gestion des erreurs fonctionnelles, partitionnement parallèle et reporting d'exécution.
+KORE est un écosystème de socles Java open source. `kore-batch` est la brique dédiée au traitement batch : extraction, transformation, chargement de données en masse, avec gestion des erreurs fonctionnelles, partitionnement parallèle et reporting d'exécution.
 
 ---
 
@@ -43,30 +43,30 @@ Ce socle extrait ces patterns une fois pour toutes. Le projet qui l'utilise n'é
 Le socle fournit l'infrastructure commune. Le projet métier n'implémente que les couches fonctionnelles.
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                     kore-batch (socle)                  │
-│                                                         │
-│   BatchLauncher ──► JobLauncher ──► Job                 │
-│                                      │                  │
-│                              PartitionStep              │
-│                           ┌────┴────┐                   │
-│                      Worker  ...  Worker  (N threads)   │
-│                           └────┬────┘                   │
-│                         AbstractBatchAggregator         │
-│                                │                        │
-│                         ISynthese (résultat global)     │
-└─────────────────────────────────────────────────────────┘
-                               ▲
-                               │ extends / implements
-┌─────────────────────────────────────────────────────────┐
-│                  kore-batch-sample (métier)              │
-│                                                         │
-│   SampleBatchApplication ──► BatchConfiguration         │
-│   CommandeItemReader                                     │
-│   CommandeItemProcessor  ──► FunctionalException        │
-│   CommandeItemWriter                                     │
-│   CommandeAggregator     ──► CommandeSyntheseDto        │
-└─────────────────────────────────────────────────────────┘
++----------------------------------------------------------+
+|                    kore-batch (socle)                    |
+|                                                          |
+|   BatchLauncher --> JobLauncher --> Job                  |
+|                                      |                   |
+|                              PartitionStep               |
+|                           +----+----+                    |
+|                      Worker  ...  Worker  (N threads)    |
+|                           +----+----+                    |
+|                       AbstractBatchAggregator            |
+|                                |                         |
+|                         ISynthese (résultat global)      |
++----------------------------------------------------------+
+                               ^
+                               | extends / implements
++----------------------------------------------------------+
+|                 kore-batch-sample (métier)               |
+|                                                          |
+|   SampleBatchApplication --> BatchConfiguration          |
+|   CommandeItemReader                                     |
+|   CommandeItemProcessor  --> FunctionalException         |
+|   CommandeItemWriter                                     |
+|   CommandeAggregator     --> CommandeSyntheseDto         |
++----------------------------------------------------------+
 ```
 
 ---
@@ -75,7 +75,7 @@ Le socle fournit l'infrastructure commune. Le projet métier n'implémente que l
 
 ```
 kore-batch/
-├── kore-batch/              # Socle — publié sur GitHub Packages
+├── kore-batch/              # Socle - publié sur GitHub Packages
 │   └── src/main/java/dev/kore/batch/core/
 │       ├── BatchLauncher.java
 │       ├── config/          # ThreadPool, configuration commune
@@ -162,10 +162,10 @@ GitHub Actions s'exécute à chaque push sur `main` :
 
 ## Documentation
 
-→ [docs/](docs/README.md)
+[docs/](docs/README.md)
 
 ---
 
 ## Licence
 
-Apache 2.0 — voir [LICENSE](LICENSE).
+Apache 2.0 - voir [LICENSE](LICENSE).

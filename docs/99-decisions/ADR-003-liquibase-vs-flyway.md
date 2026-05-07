@@ -1,8 +1,4 @@
-# ADR-003 — Liquibase à la place de Flyway
-
-## Statut
-
-Accepté
+# ADR-003 - Liquibase à la place de Flyway
 
 ## Contexte
 
@@ -24,22 +20,22 @@ Utiliser **Liquibase**.
 
 ```
 db/changelog/
-├── db.changelog-master.xml           ← Point d'entrée
+├── db.changelog-master.xml           <- Point d'entrée
 └── versions/
     └── v1.0.0/
-        ├── 01-spring-batch-schema.xml    ← Tables Spring Batch
-        ├── 02-create-commande-table.xml  ← Tables métier
+        ├── 01-spring-batch-schema.xml    <- Tables Spring Batch
+        ├── 02-create-commande-table.xml  <- Tables métier
         └── sql/
             └── spring-batch-schema-postgresql.sql
 ```
 
 ## Convention de nommage
 
-`{NN}-{description}.xml` — numéroté pour garantir l'ordre d'exécution.
+`{NN}-{description}.xml` - numéroté pour garantir l'ordre d'exécution.
 
 Chaque `changeSet` porte l'attribut `author="alak8ba"` pour la traçabilité.
 
 ## Conséquences
 
-- `spring.batch.jdbc.initialize-schema=never` — Liquibase gère tout
+- `spring.batch.jdbc.initialize-schema=never` : Liquibase gère tout
 - Les scripts SQL PostgreSQL sont dans le dossier `sql/` pour être lisibles directement

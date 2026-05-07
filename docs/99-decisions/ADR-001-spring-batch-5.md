@@ -1,12 +1,8 @@
-# ADR-001 — Migration Spring Batch 4 → Spring Batch 5
-
-## Statut
-
-Accepté
+# ADR-001 - Migration Spring Batch 4 vers Spring Batch 5
 
 ## Contexte
 
-Le socle original (2016–2019) était basé sur Spring Batch 4 / Spring Boot 2.1. Spring Batch 5, sorti avec Spring Boot 3, introduit des changements d'API non rétrocompatibles.
+Le socle original (2016-2019) était basé sur Spring Batch 4 / Spring Boot 2.1. Spring Batch 5, sorti avec Spring Boot 3, introduit des changements d'API non rétrocompatibles.
 
 ## Décision
 
@@ -35,7 +31,7 @@ new StepBuilder("monStep", jobRepository).chunk(10, transactionManager).reader(r
 
 ### Auto-configuration
 
-`@EnableBatchProcessing` n'est plus nécessaire avec Spring Boot 3 — tout est auto-configuré.
+`@EnableBatchProcessing` n'est plus nécessaire avec Spring Boot 3 : tout est auto-configuré.
 
 ### Instanciation générique
 

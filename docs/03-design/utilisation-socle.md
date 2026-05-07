@@ -35,7 +35,7 @@ Configurer l'accès dans `~/.m2/settings.xml` :
 
 ## Étapes d'implémentation
 
-### 1. Point d'entrée — étendre BatchLauncher
+### 1. Point d'entrée - étendre BatchLauncher
 
 ```java
 @SpringBootApplication(scanBasePackages = {"dev.kore.batch"})
@@ -51,13 +51,12 @@ public class MonBatchApplication extends BatchLauncher {
 
     @Override
     protected void addJobParameters(String[] args, JobParametersBuilder builder) {
-        // Extraire vos paramètres CLI et les ajouter au builder
         builder.addString("inputFile", extractArg(args, "--inputFile"));
     }
 }
 ```
 
-### 2. Synthèse métier — étendre SyntheseDto
+### 2. Synthèse métier - étendre SyntheseDto
 
 ```java
 @Getter
@@ -76,7 +75,7 @@ public class MonSyntheseDto extends SyntheseDto {
 }
 ```
 
-### 3. Agrégateur — étendre AbstractBatchAggregator
+### 3. Agrégateur - étendre AbstractBatchAggregator
 
 ```java
 @Component
@@ -93,7 +92,7 @@ public class MonAggregator extends AbstractBatchAggregator<MonSyntheseDto> {
 }
 ```
 
-### 4. Processor — gestion des erreurs fonctionnelles
+### 4. Processor - gestion des erreurs fonctionnelles
 
 ```java
 @Slf4j
@@ -125,7 +124,7 @@ public class MonItemProcessor implements ItemProcessor<MonInputDto, MonResultDto
 }
 ```
 
-### 5. Configuration du job — Spring Batch 5
+### 5. Configuration du job - Spring Batch 5
 
 ```java
 @Configuration
