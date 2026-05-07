@@ -1,6 +1,6 @@
 package dev.kore.batch.sample;
 
-import dev.kore.batch.core.dto.ISynthese;
+import dev.kore.batch.dto.ISynthese;
 import dev.kore.batch.sample.dto.CommandeSyntheseDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.BatchStatus;
