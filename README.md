@@ -117,12 +117,13 @@ cd kore-batch
 # Démarrer PostgreSQL
 docker compose -f docker-compose.dev.yml up -d
 
-# Compiler le socle
-mvn install -pl kore-batch -am -DskipTests
+# Builder l'ensemble du projet (socle + sample)
+mvn clean install -DskipTests
 
 # Lancer le sample
-cd kore-batch-sample
-mvn spring-boot:run -Dspring-boot.run.profiles=dev -Dspring-boot.run.arguments="--inputFile=/data/commandes.csv"
+mvn spring-boot:run -pl kore-batch-sample \
+  -Dspring-boot.run.profiles=dev \
+  -Dspring-boot.run.arguments="--inputFile=/data/commandes.csv"
 ```
 
 ### Lancer les tests
