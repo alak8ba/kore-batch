@@ -7,6 +7,13 @@ spring:
 
 # Surcharger le fichier via --inputFile=/chemin/vers/fichier au lancement
 
+# SimplePartitioner ne decoupe pas les donnees - il cree N workers qui lisent chacun le fichier entier.
+# Pour un fichier unique, grid-size=1 est obligatoire (sinon total = gridSize x nbLignes).
+# grid-size > 1 est pertinent avec MultiResourcePartitioner (N fichiers) ou un partitioner par plage.
+batch:
+  partitioning:
+    grid-size: 1
+
 logging:
   level:
     dev.kore.batch: DEBUG
