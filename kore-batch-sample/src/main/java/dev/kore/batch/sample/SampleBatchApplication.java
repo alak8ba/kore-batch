@@ -2,6 +2,7 @@ package dev.kore.batch.sample;
 
 import dev.kore.batch.BatchLauncher;
 import dev.kore.batch.error.TechnicalException;
+import dev.kore.batch.health.BatchHealthAggregator;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -15,8 +16,10 @@ import org.springframework.context.ApplicationContext;
 @SpringBootApplication(scanBasePackages = {"dev.kore.batch"})
 public class SampleBatchApplication extends BatchLauncher {
 
-    public SampleBatchApplication(JobLauncher jobLauncher, Job job, ApplicationContext applicationContext) {
-        super(jobLauncher, job, applicationContext);
+    public SampleBatchApplication(JobLauncher jobLauncher, Job job,
+                                   ApplicationContext applicationContext,
+                                   BatchHealthAggregator healthAggregator) {
+        super(jobLauncher, job, applicationContext, healthAggregator);
     }
 
     public static void main(String[] args) {

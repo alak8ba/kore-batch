@@ -2,6 +2,7 @@ package dev.kore.batch;
 
 import dev.kore.batch.dto.ISynthese;
 import dev.kore.batch.error.TechnicalException;
+import dev.kore.batch.health.BatchHealthAggregator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -20,7 +21,6 @@ import org.springframework.context.ApplicationContext;
  * Codes retour :
  *   0  = succès
  *  -1  = erreur technique
- *   1  = erreurs fonctionnelles bloquantes (activable si besoin)
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -32,11 +32,19 @@ public abstract class BatchLauncher implements CommandLineRunner {
     private final JobLauncher jobLauncher;
     private final Job job;
     private final ApplicationContext applicationContext;
+    private final BatchHealthAggregator healthAggregator;
 
     @Override
     public void run(String... args) {
         int codeRetour = CODE_ERREUR_TECHNIQUE;
         try {
+            if (!healthAggregator.checkAll()) {
+                log.error("Health check KO - batch annule");
+                SpringApplication.exit(applicationContext);
+                System.exit(CODE_ERREUR_TECHNIQUE);
+                return;
+            }
+
             JobParametersBuilder builder = new JobParametersBuilder();
             builder.addLong("timestamp", System.currentTimeMillis());
             addJobParameters(args, builder);
