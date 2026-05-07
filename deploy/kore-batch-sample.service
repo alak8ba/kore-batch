@@ -9,12 +9,14 @@ Group=kore-batch
 
 WorkingDirectory=/opt/kore-batch
 
-Environment="SPRING_PROFILES_ACTIVE=prod"
-Environment="DB_URL=jdbc:postgresql://localhost:5432/batchdb"
-Environment="DB_USER=batch_user"
-Environment="DB_PASSWORD=batch_pass"
+# Secrets dans un fichier separe - jamais dans ce fichier
+# Creer /etc/kore-batch/env depuis deploy/env.prod.template
+EnvironmentFile=/etc/kore-batch/env
 
-ExecStart=/usr/bin/java -jar /opt/kore-batch/kore-batch-sample.jar
+ExecStart=/usr/bin/java \
+    -Xmx512m \
+    -jar /opt/kore-batch/kore-batch-sample.jar \
+    --inputFile=${INPUT_FILE}
 
 StandardOutput=journal
 StandardError=journal
