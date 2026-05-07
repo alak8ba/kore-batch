@@ -1,5 +1,9 @@
 # ADR-003 - Liquibase à la place de Flyway
 
+## Source
+
+Choix d'infrastructure lors de la création du socle kore-batch (mai 2026)
+
 ## Contexte
 
 Les tables Spring Batch et les tables métier doivent être créées et versionnées de façon reproductible sur tous les environnements.

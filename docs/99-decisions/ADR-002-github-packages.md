@@ -1,5 +1,9 @@
 # ADR-002 - GitHub Packages à la place de Nexus
 
+## Source
+
+Choix d'infrastructure lors de la création du socle kore-batch (mai 2026)
+
 ## Contexte
 
 Le socle `kore-batch` doit être publié dans un registry Maven pour être consommé par les projets métier. L'ancien stack utilisait un Nexus interne inaccessible hors réseau local.
