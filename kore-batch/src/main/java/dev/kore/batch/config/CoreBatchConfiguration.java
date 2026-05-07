@@ -1,14 +1,10 @@
-package dev.kore.batch.core.config;
+package dev.kore.batch.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-/**
- * Configuration infrastructure commune à tous les batchs.
- * Fournit le ThreadPoolTaskExecutor pour les steps partitionnés.
- */
 @Configuration
 public class CoreBatchConfiguration {
 

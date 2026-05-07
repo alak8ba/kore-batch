@@ -1,6 +1,6 @@
 package dev.kore.batch.sample.config;
 
-import dev.kore.batch.core.listener.BatchJobExecutionListener;
+import dev.kore.batch.listener.BatchJobExecutionListener;
 import dev.kore.batch.sample.aggregator.CommandeAggregator;
 import dev.kore.batch.sample.dto.CommandeDto;
 import dev.kore.batch.sample.dto.CommandeResultDto;

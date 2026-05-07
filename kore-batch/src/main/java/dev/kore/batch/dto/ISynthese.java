@@ -1,4 +1,4 @@
-package dev.kore.batch.core.dto;
+package dev.kore.batch.dto;
 
 import java.io.Serializable;
 

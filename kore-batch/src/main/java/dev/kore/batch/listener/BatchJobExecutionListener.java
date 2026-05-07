@@ -1,6 +1,6 @@
-package dev.kore.batch.core.listener;
+package dev.kore.batch.listener;
 
-import dev.kore.batch.core.dto.ISynthese;
+import dev.kore.batch.dto.ISynthese;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
@@ -24,7 +24,7 @@ public class BatchJobExecutionListener implements JobExecutionListener {
         Duration duree = Duration.between(jobExecution.getStartTime(), jobExecution.getEndTime());
         ISynthese synthese = (ISynthese) jobExecution.getExecutionContext().get(ISynthese.SYNTHESE_KEY);
 
-        log.info("=== FIN DU BATCH [{}] - Statut={} - Durée={}s ===",
+        log.info("=== FIN DU BATCH [{}] - Statut={} - Duree={}s ===",
             jobExecution.getJobInstance().getJobName(),
             jobExecution.getStatus(),
             duree.toSeconds());

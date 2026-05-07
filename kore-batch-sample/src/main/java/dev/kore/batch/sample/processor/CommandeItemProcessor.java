@@ -1,7 +1,7 @@
 package dev.kore.batch.sample.processor;
 
-import dev.kore.batch.core.dto.ISynthese;
-import dev.kore.batch.core.error.FunctionalException;
+import dev.kore.batch.dto.ISynthese;
+import dev.kore.batch.error.FunctionalException;
 import dev.kore.batch.sample.dto.CommandeDto;
 import dev.kore.batch.sample.dto.CommandeResultDto;
 import dev.kore.batch.sample.dto.CommandeSyntheseDto;
@@ -53,7 +53,7 @@ public class CommandeItemProcessor implements ItemProcessor<CommandeDto, Command
         }
         if (commande.getMontant() == null || commande.getMontant().compareTo(BigDecimal.ZERO) <= 0) {
             throw new FunctionalException(getClass().getSimpleName(), "valider",
-                "Montant invalide (doit être > 0) - ref=" + commande.getReference());
+                "Montant invalide (doit etre > 0) - ref=" + commande.getReference());
         }
     }
 

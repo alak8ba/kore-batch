@@ -1,7 +1,7 @@
-package dev.kore.batch.core;
+package dev.kore.batch;
 
-import dev.kore.batch.core.dto.ISynthese;
-import dev.kore.batch.core.error.TechnicalException;
+import dev.kore.batch.dto.ISynthese;
+import dev.kore.batch.error.TechnicalException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
@@ -26,9 +26,8 @@ import org.springframework.context.ApplicationContext;
 @RequiredArgsConstructor
 public abstract class BatchLauncher implements CommandLineRunner {
 
-    protected static final int CODE_OK                  = 0;
-    protected static final int CODE_ERREUR_TECHNIQUE    = -1;
-    protected static final int CODE_ERREUR_FONCTIONNELLE = 1;
+    protected static final int CODE_OK               = 0;
+    protected static final int CODE_ERREUR_TECHNIQUE = -1;
 
     private final JobLauncher jobLauncher;
     private final Job job;
@@ -50,7 +49,7 @@ public abstract class BatchLauncher implements CommandLineRunner {
         } catch (TechnicalException e) {
             log.error("Erreur technique : {}", e.getMessage(), e);
         } catch (Exception e) {
-            log.error("Erreur non gérée : {}", e.getMessage(), e);
+            log.error("Erreur non geree : {}", e.getMessage(), e);
         } finally {
             SpringApplication.exit(applicationContext);
             System.exit(codeRetour);

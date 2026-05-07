@@ -1,6 +1,6 @@
 package dev.kore.batch.sample.dto;
 
-import dev.kore.batch.core.dto.SyntheseDto;
+import dev.kore.batch.dto.SyntheseDto;
 import lombok.Getter;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
-package dev.kore.batch.core.aggregator;
+package dev.kore.batch.aggregator;
 
-import dev.kore.batch.core.dto.ISynthese;
+import dev.kore.batch.dto.ISynthese;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepExecution;

@@ -1,4 +1,4 @@
-package dev.kore.batch.core.error;
+package dev.kore.batch.error;
 
 public class TechnicalException extends RuntimeException {
 

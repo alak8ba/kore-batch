@@ -1,4 +1,4 @@
-package dev.kore.batch.core.dto;
+package dev.kore.batch.dto;
 
 import lombok.Getter;
 import lombok.ToString;
@@ -21,14 +21,14 @@ public class SyntheseDto implements ISynthese {
 
     public void merge(SyntheseDto other) {
         if (other == null) return;
-        nbOK                  += other.nbOK;
-        nbKO                  += other.nbKO;
-        nbDoublons            += other.nbDoublons;
-        nbErreursTechniques   += other.nbErreursTechniques;
+        nbOK                    += other.nbOK;
+        nbKO                    += other.nbKO;
+        nbDoublons              += other.nbDoublons;
+        nbErreursTechniques     += other.nbErreursTechniques;
         nbErreursFonctionnelles += other.nbErreursFonctionnelles;
     }
 
-    @Override public long getTotal()                  { return nbOK + nbKO; }
-    @Override public boolean hasTechnicalErrors()     { return nbErreursTechniques > 0; }
-    @Override public boolean hasFunctionalErrors()    { return nbErreursFonctionnelles > 0; }
+    @Override public long getTotal()               { return nbOK + nbKO; }
+    @Override public boolean hasTechnicalErrors()  { return nbErreursTechniques > 0; }
+    @Override public boolean hasFunctionalErrors() { return nbErreursFonctionnelles > 0; }
 }

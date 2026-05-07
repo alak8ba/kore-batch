@@ -1,6 +1,6 @@
 package dev.kore.batch.sample.aggregator;
 
-import dev.kore.batch.core.aggregator.AbstractBatchAggregator;
+import dev.kore.batch.aggregator.AbstractBatchAggregator;
 import dev.kore.batch.sample.dto.CommandeSyntheseDto;
 import org.springframework.stereotype.Component;
 
