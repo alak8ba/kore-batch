@@ -13,7 +13,7 @@
 
     <groupId>dev.kore.batch</groupId>
     <artifactId>kore-batch-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <name>kore-batch-parent</name>
     <description>Socle Spring Batch moderne - Java 21 / Spring Boot 3.3 / Spring Batch 5</description>
