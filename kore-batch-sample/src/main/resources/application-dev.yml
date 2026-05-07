@@ -7,12 +7,11 @@ spring:
 
 # Surcharger le fichier via --inputFile=/chemin/vers/fichier au lancement
 
-# SimplePartitioner ne decoupe pas les donnees - il cree N workers qui lisent chacun le fichier entier.
-# Pour un fichier unique, grid-size=1 est obligatoire (sinon total = gridSize x nbLignes).
-# grid-size > 1 est pertinent avec MultiResourcePartitioner (N fichiers) ou un partitioner par plage.
+# SynchronizedItemStreamReader partage le reader entre les partitions de facon thread-safe.
+# gridSize=4 : 4 workers se partagent les 200 items (pas de doublon).
 batch:
   partitioning:
-    grid-size: 1
+    grid-size: 4
 
 logging:
   level:
