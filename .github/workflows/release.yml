@@ -10,7 +10,7 @@ jobs:
     name: Publish kore-batch sur GitHub Packages
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
