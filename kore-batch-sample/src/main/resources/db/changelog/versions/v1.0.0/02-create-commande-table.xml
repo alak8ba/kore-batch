@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <changeSet id="02-create-commande-table" author="alak8ba">
+        <createTable tableName="T_COMMANDE">
+            <column name="ID" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="REFERENCE" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="CLIENT_ID" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MONTANT" type="DECIMAL(15,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_COMMANDE" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATUT" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DATE_TRAITEMENT" type="TIMESTAMP"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

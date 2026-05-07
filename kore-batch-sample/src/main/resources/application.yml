@@ -5,9 +5,12 @@ spring:
     web-application-type: none
   batch:
     job:
-      enabled: false  # Le batch est lancé manuellement via BatchLauncher
+      enabled: false
     jdbc:
-      initialize-schema: always  # Crée les tables Spring Batch au démarrage (H2 en dev)
+      initialize-schema: never  # Géré par Liquibase
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5432/batchdb
     driver-class-name: org.postgresql.Driver
