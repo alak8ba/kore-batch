@@ -80,7 +80,7 @@ SET session_replication_role = DEFAULT;
 Main class       : dev.kore.batch.sample.IndividuBatchApplication
 Module           : kore-batch-sample
 Active profiles  : dev
-Program arguments: --inputFile=C:/workspace/datas/X/V/IR/VIRMCEA/fic/VIRMCEAFD01
+Program arguments: --inputFile=C:\workspace\kore-batch\kore-batch-sample\src\test\resources\data\individus_test.txt
 JDK              : temurin-21
 ```
 
