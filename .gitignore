@@ -29,3 +29,9 @@ replay_pid*
 /kore-batch-sample/target/
 
 desktop.ini
+
+# Secrets prod - jamais commiter les vraies valeurs
+deploy/env.prod
+.env
+.env.*
+!/deploy/env.prod.template
