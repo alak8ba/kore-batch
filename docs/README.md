@@ -11,6 +11,7 @@ Ce dossier contient la conception technique complète du socle KORE BATCH.
 | [03-design](03-design/) | Conception fonctionnelle, guide d'utilisation |
 | [04-devops](04-devops/) | CI/CD, environnements, déploiement |
 | [05-quality](05-quality/) | Stratégie de test, gestion des erreurs, audit expert |
+| [06-dev](06-dev/) | Guides pratiques : setup dev, tests Windows, deploiement prod |
 | [99-decisions](99-decisions/) | Décisions d'architecture (ADR) |
 
 ## Décisions d'architecture (ADR)
