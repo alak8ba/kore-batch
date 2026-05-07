@@ -1,5 +1,23 @@
 # Architecture du socle
 
+## Modèle d'exécution Spring Batch
+
+Le diagramme ci-dessous illustre le modèle d'exécution standard de Spring Batch, tel qu'implémenté dans ce socle.
+
+![Spring Batch execution model](assets/spring-batch-execution-model.png)
+
+**Lecture du diagramme :**
+
+- Le **Job Scheduler** (cron, Control-M, CI) déclenche `run()` sur le **Job Launcher**
+- Le **Job Launcher** exécute le **Job** et persiste les métadonnées dans le **Job Repository** (PostgreSQL)
+- Chaque **Step** orchestre un cycle `read() → process() → write()` répété par chunk
+- Plusieurs steps peuvent s'enchaîner — ici deux steps parallèles illustrent le partitionnement
+- Le **File System** et la **Database** sont les sources/destinations typiques
+
+Dans `kore-batch`, le partitionnement parallèle découpe automatiquement le traitement en N workers qui exécutent chacun ce cycle indépendamment, avant agrégation par `AbstractBatchAggregator`.
+
+---
+
 ## Vue d'ensemble
 
 ```

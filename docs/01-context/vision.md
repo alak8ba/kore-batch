@@ -2,7 +2,7 @@
 
 ## Origine
 
-KORE BATCH est issu de plusieurs années de développement batch en production chez SNCF (2016–2019), sur des projets de traitement de données de pensions, notifications et flux d'alimentation.
+KORE BATCH est issu de plusieurs années de développement batch en production (2016–2019), sur des projets à fort volume de données : traitements de flux entrants, notifications, rapports fonctionnels, valorisation de données métier.
 
 Ces projets partageaient tous la même infrastructure : lancement CLI, gestion des codes retour, partitionnement parallèle, agrégation des résultats, distinction erreurs fonctionnelles / techniques. Ce socle extrait ces patterns communs et les met à disposition de tout projet batch Java.
 
