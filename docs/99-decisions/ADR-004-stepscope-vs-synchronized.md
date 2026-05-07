@@ -56,55 +56,81 @@ est déjà en cours de lecture. Résultat : données dupliquées ou perdues.
 
 ## Décision
 
-Adopter `@StepScope` sur le reader et le processor.
+Adopter `SynchronizedItemStreamReader` sur le reader, `@StepScope` sur le processor.
 
 `@StepScope` est un scope Spring spécifique à Spring Batch.
 Un bean `@StepScope` crée une nouvelle instance pour chaque
 `StepExecution`. Avec le partitioning, chaque partition (worker)
 obtient sa propre instance — pas de partage, pas besoin de verrou.
 
+### Reader : SynchronizedItemStreamReader
+
+`SynchronizedItemStreamReader` est le wrapper officiel Spring Batch pour
+rendre un reader thread-safe. Un seul reader est partagé entre toutes les
+partitions. Les appels `read()` sont synchronisés nativement par le framework.
+Chaque item est lu UNE seule fois et dispatché à UN seul worker.
+
 ```java
 // Nouvelle implémentation - Spring Batch 5 / Java 21
-@Component
-@StepScope // Une instance par StepExecution / partition
+@Component // singleton - pas de @StepScope
 public class AssureItemReader implements ItemReader<AssureDto> {
 
-    private FlatFileItemReader<AssureDto> delegate;
+    private SynchronizedItemStreamReader<AssureDto> synchronizedReader;
 
     @BeforeStep
     public void beforeStep(StepExecution stepExecution) throws Exception {
         String inputFile = stepExecution.getJobParameters().getString("inputFile");
 
-        delegate = new FlatFileItemReaderBuilder<AssureDto>()
+        FlatFileItemReader<AssureDto> delegate = new FlatFileItemReaderBuilder<AssureDto>()
                 .name("assureItemReader")
                 .resource(new FileSystemResource(inputFile))
                 .lineMapper(new AssureLineMapper())
                 .encoding("ISO-8859-1")
                 .build();
 
-        delegate.open(new ExecutionContext());
+        synchronizedReader = new SynchronizedItemStreamReader<>();
+        synchronizedReader.setDelegate(delegate);
+        synchronizedReader.open(new ExecutionContext());
     }
 
     @Override
     public AssureDto read() throws Exception {
-        return delegate.read(); // Thread-safe : instance isolée
+        return synchronizedReader.read(); // thread-safe via wrapper Spring Batch
     }
 }
 ```
 
+### Processor : @StepScope
+
+Le processor garde `@StepScope` car il maintient un état propre par partition :
+la `IndividuSyntheseDto` qui comptabilise les résultats de chaque worker.
+
+```java
+@Component
+@StepScope // Une synthese par partition
+public class AssureItemProcessor implements ItemProcessor<AssureDto, AssureResultDto> {
+    private IndividuSyntheseDto synthese; // état propre à chaque partition
+    ...
+}
+```
+
+## Comparaison des trois approches
+
+| Approche | Thread-safety | Duplication | Parallelisme | Recommandation |
+|---|---|---|---|---|
+| `synchronized` (ancien) | Manuel | Non | Partiel (contention) | Abandonner |
+| `@StepScope` seul | Isolation | Oui (x gridSize) | Oui mais données dupliquées | Pour reader AVEC état propre |
+| `SynchronizedItemStreamReader` | Framework | Non | Oui, vrai parallelisme | Recommande SB5 |
+
 ## Conséquences
 
 **Positives :**
-- Pas de contention entre threads → parallélisme pleinement efficace
-- Pas de race condition sur `beforeStep`
-- Code plus simple et lisible
-- Conforme aux conventions Spring Batch
+- Vrai parallelisme : gridSize=4 + 200 lignes = 200 items traites (pas 800)
+- Thread-safety delegue au framework Spring Batch
+- Suppression du `synchronized` manuel
+- Conforme aux recommandations Spring Batch 5
 
 **A noter :**
-- `@StepScope` ne peut pas être utilisé sur des beans injectés
-  dans un contexte hors step (ex : `@Configuration`). Dans ce cas,
-  utiliser un proxy via `@Bean @StepScope` dans une `@Configuration`.
-- Chaque partition lit le fichier depuis le début. Avec `SimplePartitioner`,
-  toutes les partitions traitent le même fichier — le découpage se fait
-  via le `FlatFileItemReader` qui est thread-safe en lecture séquentielle
-  car chaque instance a son propre état de lecture.
+- Le processor garde `@StepScope` car sa synthese est un état par partition
+- `SynchronizedItemStreamReader` serialise les `read()` mais le traitement
+  (processor + writer) reste parallele → gain de performance reel
