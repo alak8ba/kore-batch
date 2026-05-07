@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.argument.StructuredArguments;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.BeforeStep;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 
 @Slf4j
 @Component
+@StepScope
 public class CommandeItemProcessor implements ItemProcessor<CommandeDto, CommandeResultDto> {
 
     private CommandeSyntheseDto synthese;
