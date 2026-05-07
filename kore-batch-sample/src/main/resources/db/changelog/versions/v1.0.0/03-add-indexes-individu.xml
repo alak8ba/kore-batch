@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
+
+    <!-- Index sur STATUT : acces rapide aux OK/KO pour reporting -->
+    <changeSet id="03-idx-individu-statut" author="alak8ba">
+        <preConditions onFail="MARK_RAN">
+            <not><indexExists tableName="T_INDIVIDU" indexName="idx_individu_statut"/></not>
+        </preConditions>
+        <createIndex tableName="T_INDIVIDU" indexName="idx_individu_statut">
+            <column name="STATUT"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Index sur PAYS : analyse par zone geographique -->
+    <changeSet id="03-idx-individu-pays" author="alak8ba">
+        <preConditions onFail="MARK_RAN">
+            <not><indexExists tableName="T_INDIVIDU" indexName="idx_individu_pays"/></not>
+        </preConditions>
+        <createIndex tableName="T_INDIVIDU" indexName="idx_individu_pays">
+            <column name="PAYS"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Index sur DATE_TRAITEMENT : requetes temporelles et reporting batch -->
+    <changeSet id="03-idx-individu-date-traitement" author="alak8ba">
+        <preConditions onFail="MARK_RAN">
+            <not><indexExists tableName="T_INDIVIDU" indexName="idx_individu_date_traitement"/></not>
+        </preConditions>
+        <createIndex tableName="T_INDIVIDU" indexName="idx_individu_date_traitement">
+            <column name="DATE_TRAITEMENT"/>
+        </createIndex>
+    </changeSet>
+
+    <!-- Index partiel sur les KO uniquement : le plus consulte pour analyse des erreurs
+         Selectivite elevee si KO represente une minorite des lignes -->
+    <changeSet id="03-idx-individu-ko" author="alak8ba">
+        <preConditions onFail="MARK_RAN">
+            <not><indexExists tableName="T_INDIVIDU" indexName="idx_individu_ko"/></not>
+        </preConditions>
+        <sql>
+            CREATE INDEX idx_individu_ko
+            ON T_INDIVIDU(NUM_REFERENCE, DATE_TRAITEMENT)
+            WHERE STATUT = 'KO';
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
