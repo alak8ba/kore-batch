@@ -27,3 +27,5 @@ replay_pid*
 /.m2/repository/
 /kore-batch/target/
 /kore-batch-sample/target/
+
+desktop.ini

@@ -23,6 +23,7 @@ Ce dossier contient la conception technique complète du socle KORE BATCH.
 | [ADR-004](99-decisions/ADR-004-stepscope-vs-synchronized.md) | @StepScope vs synchronized dans le reader |
 | [ADR-005](99-decisions/ADR-005-flatfileitemreader-vs-inmemory.md) | FlatFileItemReader vs chargement en mémoire |
 | [ADR-006](99-decisions/ADR-006-skip-policy.md) | Pattern fonctionnel vs Skip natif Spring Batch |
+| [ADR-007](99-decisions/ADR-007-java-21.md) | Choix de Java 21 comme version cible |
 
 ## Public cible
 

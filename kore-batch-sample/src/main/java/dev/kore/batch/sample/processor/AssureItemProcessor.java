@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Applique les règles de validation sur chaque individu :
- * - NIR obligatoire, 13 caractères, commence par 1 ou 2
+ * - Identifiant obligatoire, 10 caractères, commence par 5 ou 6
  * - Nom/prénom obligatoire
  * - Pays obligatoire
  */
@@ -34,7 +34,7 @@ public class AssureItemProcessor implements ItemProcessor<AssureDto, AssureResul
 
     @Override
     public AssureResultDto process(AssureDto assure) {
-        log.debug("Traitement individu {}", assure.getNumPension());
+        log.debug("Traitement individu ref={}", assure.getReference());
         try {
             valider(assure);
             synthese.incrementOK();
@@ -42,40 +42,40 @@ public class AssureItemProcessor implements ItemProcessor<AssureDto, AssureResul
 
         } catch (FunctionalException e) {
             log.warn("Erreur fonctionnelle [{}] : {}",
-                StructuredArguments.value("numPension", assure.getNumPension()),
+                StructuredArguments.value("reference", assure.getReference()),
                 e.getMessage());
             synthese.incrementKO();
             synthese.incrementErreurFonctionnelle();
-            synthese.addNumeroEnErreur(assure.getNumPension());
+            synthese.addReferenceEnErreur(assure.getReference());
             return AssureResultDto.ko(assure, e.getMessage());
         }
     }
 
     private void valider(AssureDto assure) throws FunctionalException {
-        if (assure.getNumPension() == null || assure.getNumPension().isBlank()) {
+        if (assure.getReference() == null || assure.getReference().isBlank()) {
             throw new FunctionalException(getClass().getSimpleName(), "valider",
-                "Numero obligatoire");
+                "Reference obligatoire");
         }
-        if (assure.getNir() == null || assure.getNir().isBlank()) {
+        if (assure.getIdentifiant() == null || assure.getIdentifiant().isBlank()) {
             throw new FunctionalException(getClass().getSimpleName(), "valider",
-                "NIR absent - num=" + assure.getNumPension());
+                "Identifiant absent - ref=" + assure.getReference());
         }
-        if (assure.getNir().length() != 13) {
+        if (assure.getIdentifiant().length() != 10) {
             throw new FunctionalException(getClass().getSimpleName(), "valider",
-                "NIR invalide (doit faire 13 caracteres) - NIR=" + assure.getNir());
+                "Identifiant invalide (doit faire 10 caracteres) - val=" + assure.getIdentifiant());
         }
-        char premierCaractere = assure.getNir().charAt(0);
-        if (premierCaractere != '1' && premierCaractere != '2') {
+        char premier = assure.getIdentifiant().charAt(0);
+        if (premier != '5' && premier != '6') {
             throw new FunctionalException(getClass().getSimpleName(), "valider",
-                "NIR invalide (doit commencer par 1 ou 2) - NIR=" + assure.getNir());
+                "Identifiant invalide (doit commencer par 5 ou 6) - val=" + assure.getIdentifiant());
         }
         if (assure.getNomPrenom() == null || assure.getNomPrenom().isBlank()) {
             throw new FunctionalException(getClass().getSimpleName(), "valider",
-                "Nom absent - num=" + assure.getNumPension());
+                "Nom absent - ref=" + assure.getReference());
         }
         if (assure.getPays() == null || assure.getPays().isBlank()) {
             throw new FunctionalException(getClass().getSimpleName(), "valider",
-                "Pays absent - num=" + assure.getNumPension());
+                "Pays absent - ref=" + assure.getReference());
         }
     }
 }

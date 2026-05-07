@@ -6,6 +6,9 @@
         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd">
 
     <changeSet id="02-create-individu-table" author="alak8ba">
+        <preConditions onFail="MARK_RAN">
+            <not><tableExists tableName="T_INDIVIDU"/></not>
+        </preConditions>
         <createTable tableName="T_INDIVIDU">
             <column name="ID" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
@@ -14,7 +17,7 @@
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="TYPE_REFERENCE" type="VARCHAR(10)"/>
-            <column name="NIR" type="VARCHAR(13)"/>
+            <column name="IDENTIFIANT" type="VARCHAR(10)"/>
             <column name="CIVILITE" type="VARCHAR(10)"/>
             <column name="NOM_PRENOM" type="VARCHAR(80)"/>
             <column name="ADRESSE_LIGNE1" type="VARCHAR(38)"/>

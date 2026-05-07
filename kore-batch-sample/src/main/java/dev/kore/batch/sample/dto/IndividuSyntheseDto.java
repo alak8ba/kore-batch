@@ -9,16 +9,16 @@ import java.util.List;
 @Getter
 public class IndividuSyntheseDto extends SyntheseDto {
 
-    private final List<String> numerosEnErreur = new ArrayList<>();
+    private final List<String> referencesEnErreur = new ArrayList<>();
 
-    public void addNumeroEnErreur(String numero) {
-        numerosEnErreur.add(numero);
+    public void addReferenceEnErreur(String reference) {
+        referencesEnErreur.add(reference);
     }
 
     public void merge(IndividuSyntheseDto other) {
         super.merge(other);
         if (other != null) {
-            numerosEnErreur.addAll(other.numerosEnErreur);
+            referencesEnErreur.addAll(other.referencesEnErreur);
         }
     }
 }

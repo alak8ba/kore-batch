@@ -95,9 +95,36 @@ Le projet métier étend `SyntheseDto` pour ajouter ses données métier.
 
 Log structuré du début et de la fin du job avec durée et synthèse complète.
 
+### BatchHealthAggregator
+
+Verifie toutes les dependances avant le lancement du job.
+Collecte automatiquement tous les beans `BatchHealthIndicator` declares dans le contexte Spring.
+
+Indicateurs fournis par le socle :
+- `DatabaseHealthIndicator` : verifie que la base de donnees est accessible
+
+Indicateurs a ajouter par le projet metier :
+- Etendre `AbstractWSHealthIndicator` pour chaque service externe a verifier
+
+Si un indicateur est KO, le batch s'arrete avant meme de lancer le job (code retour -1).
+
+### InputFileValidator
+
+Valide les `JobParameters` avant le lancement du job.
+Verifie que le parametre `inputFile` est present, que le fichier existe et est lisible.
+
+```java
+new JobBuilder("monJob", jobRepository)
+    .validator(new InputFileValidator())
+    .start(partitionStep)
+    .build();
+```
+
 ### CoreBatchConfiguration
 
-Fournit le `ThreadPoolTaskExecutor` pour le partitionnement. Taille du pool configurable via `batch.partitioning.pool-size`.
+Fournit le `ThreadPoolTaskExecutor` pour le partitionnement.
+Taille du pool configurable via `batch.partitioning.pool-size` (defaut : 4).
+Taille du chunk configurable via `batch.chunk-size` (defaut : 10).
 
 ## Changements Spring Batch 5 vs 4
 

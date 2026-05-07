@@ -1,6 +1,6 @@
 # Guide d'utilisation du socle
 
-## Ajouter la dépendance
+## Ajouter la dependance
 
 Dans votre `pom.xml` :
 
@@ -15,11 +15,11 @@ Dans votre `pom.xml` :
 <dependency>
     <groupId>dev.kore.batch</groupId>
     <artifactId>kore-batch</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
-Configurer l'accès dans `~/.m2/settings.xml` :
+Configurer l'acces dans `~/.m2/settings.xml` :
 
 ```xml
 <settings>
@@ -27,22 +27,27 @@ Configurer l'accès dans `~/.m2/settings.xml` :
         <server>
             <id>github</id>
             <username>VOTRE_USERNAME</username>
-            <password>VOTRE_TOKEN</password>
+            <password>VOTRE_TOKEN_GITHUB</password>
         </server>
     </servers>
 </settings>
 ```
 
-## Étapes d'implémentation
+## Etapes d'implementation
 
-### 1. Point d'entrée - étendre BatchLauncher
+### 1. Point d'entree - etendre BatchLauncher
+
+`BatchLauncher` prend 4 arguments : `JobLauncher`, `Job`, `ApplicationContext`
+et `BatchHealthAggregator` (injecte automatiquement par Spring).
 
 ```java
 @SpringBootApplication(scanBasePackages = {"dev.kore.batch"})
 public class MonBatchApplication extends BatchLauncher {
 
-    public MonBatchApplication(JobLauncher jobLauncher, Job job, ApplicationContext ctx) {
-        super(jobLauncher, job, ctx);
+    public MonBatchApplication(JobLauncher jobLauncher, Job job,
+                                ApplicationContext ctx,
+                                BatchHealthAggregator healthAggregator) {
+        super(jobLauncher, job, ctx, healthAggregator);
     }
 
     public static void main(String[] args) {
@@ -50,32 +55,40 @@ public class MonBatchApplication extends BatchLauncher {
     }
 
     @Override
-    protected void addJobParameters(String[] args, JobParametersBuilder builder) {
-        builder.addString("inputFile", extractArg(args, "--inputFile"));
+    protected void addJobParameters(String[] args, JobParametersBuilder builder)
+            throws TechnicalException {
+        // Extraire les parametres CLI et les ajouter au builder
+        for (String arg : args) {
+            if (arg.startsWith("--inputFile=")) {
+                builder.addString("inputFile", arg.substring("--inputFile=".length()));
+                return;
+            }
+        }
+        throw new TechnicalException("Parametre obligatoire : --inputFile=...");
     }
 }
 ```
 
-### 2. Synthèse métier - étendre SyntheseDto
+### 2. Synthese metier - etendre SyntheseDto
 
 ```java
 @Getter
 public class MonSyntheseDto extends SyntheseDto {
 
-    private final List<String> idsEnErreur = new ArrayList<>();
+    private final List<String> referencesEnErreur = new ArrayList<>();
 
-    public void addIdEnErreur(String id) {
-        idsEnErreur.add(id);
+    public void addReferenceEnErreur(String ref) {
+        referencesEnErreur.add(ref);
     }
 
     public void merge(MonSyntheseDto other) {
         super.merge(other);
-        if (other != null) idsEnErreur.addAll(other.idsEnErreur);
+        if (other != null) referencesEnErreur.addAll(other.referencesEnErreur);
     }
 }
 ```
 
-### 3. Agrégateur - étendre AbstractBatchAggregator
+### 3. Agregateur - etendre AbstractBatchAggregator
 
 ```java
 @Component
@@ -97,6 +110,7 @@ public class MonAggregator extends AbstractBatchAggregator<MonSyntheseDto> {
 ```java
 @Slf4j
 @Component
+@StepScope  // obligatoire pour le partitioning
 public class MonItemProcessor implements ItemProcessor<MonInputDto, MonResultDto> {
 
     private MonSyntheseDto synthese;
@@ -114,10 +128,10 @@ public class MonItemProcessor implements ItemProcessor<MonInputDto, MonResultDto
             synthese.incrementOK();
             return MonResultDto.ok(item);
         } catch (FunctionalException e) {
-            log.warn("Erreur fonctionnelle [{}] : {}", item.getId(), e.getMessage());
+            log.warn("Erreur fonctionnelle [{}] : {}", item.getReference(), e.getMessage());
             synthese.incrementKO();
             synthese.incrementErreurFonctionnelle();
-            synthese.addIdEnErreur(item.getId());
+            synthese.addReferenceEnErreur(item.getReference());
             return MonResultDto.ko(item, e.getMessage());
         }
     }
@@ -136,10 +150,17 @@ public class BatchConfiguration {
     private final ThreadPoolTaskExecutor taskExecutor;
     private final BatchJobExecutionListener jobExecutionListener;
 
+    @Value("${batch.chunk-size:10}")
+    private int chunkSize;
+
+    @Value("${batch.partitioning.grid-size:4}")
+    private int gridSize;
+
     @Bean
     public Job monJob(Step partitionStep) {
         return new JobBuilder("monJob", jobRepository)
                 .listener(jobExecutionListener)
+                .validator(new InputFileValidator())  // valide inputFile avant lancement
                 .start(partitionStep)
                 .build();
     }
@@ -151,28 +172,63 @@ public class BatchConfiguration {
                 .step(workerStep)
                 .aggregator(aggregator)
                 .taskExecutor(taskExecutor)
-                .gridSize(4)
+                .gridSize(gridSize)
                 .build();
     }
 
     @Bean
-    public Step workerStep(MonItemReader reader, MonItemProcessor processor, MonItemWriter writer) {
+    public Step workerStep(MonItemReader reader, MonItemProcessor processor,
+                           MonItemWriter writer, MonStepListener stepListener) {
         return new StepBuilder("monJob-worker", jobRepository)
-                .<MonInputDto, MonResultDto>chunk(10, transactionManager)
+                .<MonInputDto, MonResultDto>chunk(chunkSize, transactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
+                .listener(stepListener)
+                // FunctionalException geree dans le processor (pattern fonctionnel - ADR-006)
+                // TechnicalException non geree -> arret immediat
+                .faultTolerant()
+                .noSkip(TechnicalException.class)
                 .build();
     }
 }
 ```
 
+### 6. Health check WS externe (optionnel)
+
+Pour verifier une dependance externe avant lancement, etendre `AbstractWSHealthIndicator` :
+
+```java
+@Component
+public class MonServiceHealthIndicator extends AbstractWSHealthIndicator {
+
+    @Override
+    protected String getName() { return "MON_SERVICE"; }
+
+    @Override
+    protected boolean ping() {
+        // retourner true si le service est accessible
+        return monServiceClient.isAlive();
+    }
+}
+```
+
+Le bean est detecte automatiquement par `BatchHealthAggregator`.
+
 ## Exemple complet
 
-Le module `kore-batch-sample` illustre l'utilisation complète du socle sur un cas métier de traitement de commandes. Il couvre :
+Le module `kore-batch-sample` illustre l'utilisation complete du socle
+sur un cas de traitement d'individus depuis un fichier largeur fixe.
 
-- Lecture depuis une source (fichier / BDD)
-- Validation métier avec `FunctionalException`
-- Synthèse avec liste des références en erreur
-- Configuration partitionnée
-- Tests d'intégration avec Testcontainers
+Il couvre :
+- Reader : `FlatFileItemReader` + `LineMapper` custom (format largeur fixe, ISO-8859-1)
+- Processor : `@StepScope`, validation metier, `FunctionalException`
+- Writer : `JdbcBatchItemWriter` avec upsert PostgreSQL
+- Aggregateur : merge des syntheses de partitions
+- Listeners : job et step
+- Health check : `DatabaseHealthIndicator` + `FichierSourceHealthIndicator`
+- Validation : `InputFileValidator` sur les `JobParameters`
+- Tests IT : Testcontainers (vrai PostgreSQL), verification en base
+
+Voir [sample-description.md](sample-description.md) et
+[traitement-fichier-largeur-fixe.md](traitement-fichier-largeur-fixe.md).

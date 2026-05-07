@@ -89,7 +89,7 @@ public class AssureLineMapper implements LineMapper<AssureDto> {
     public AssureDto mapLine(String line, int lineNumber) {
         return AssureDto.builder()
                 .numPension(extractNumPension(line))
-                .nir(extractNir(line))      // 13 derniers caractères
+                .nir(extractNir(line))      // 10 derniers caractères
                 .nomPrenom(extractNom(line))
                 .pays(extractPays(line))
                 .build();

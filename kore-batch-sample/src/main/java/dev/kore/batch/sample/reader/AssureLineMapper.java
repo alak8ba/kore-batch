@@ -4,51 +4,39 @@ import dev.kore.batch.sample.dto.AssureDto;
 import org.springframework.batch.item.file.LineMapper;
 
 /**
- * Parse une ligne du fichier d'alimentation au format largeur fixe.
+ * Parse une ligne du fichier d'entrée au format largeur fixe.
  *
- * Format de chaque ligne :
- * - pos  1-12  : code service (ex: LVP021)
- * - pos 13-21  : type pension (ex: ER4-NR)
- * - *numPension* : numero pension entre asterisques
- * - civilite + nom/prenom (champ variable apres le second *)
- * - adresse ligne 1 et 2
- * - code pays (5 chiffres) + libelle pays
- * - date de reference
- * - NIR : 13 derniers caracteres (peut etre vide)
+ * Champs extraits :
+ * - reference      : valeur entre les deux marqueurs * de début de ligne
+ * - identifiant    : 10 derniers caractères (identifiant national)
+ * - typeFlux       : position 13-21
+ * - civilite/nom   : après le second marqueur
+ * - adresses/pays  : champs variables au milieu de la ligne
  */
 public class AssureLineMapper implements LineMapper<AssureDto> {
 
-    private static final int NIR_LENGTH = 13;
+    private static final int IDENTIFIANT_LENGTH = 10;
 
     @Override
     public AssureDto mapLine(String line, int lineNumber) {
         if (line == null || line.isBlank()) return null;
 
-        String numPension = extractNumPension(line);
-        String nir        = extractNir(line);
-        String typePension = extractField(line, 12, 21).trim();
+        String reference   = extractReference(line);
+        String identifiant = extractIdentifiant(line);
+        String typeFlux    = extractField(line, 12, 21).trim();
 
-        // Tout ce qui est apres le second * jusqu'au bloc pays
-        String afterPension = extractAfterNumPension(line);
-
-        // Civilite : MME, M, MLE - premier mot
-        String civilite  = extractCivilite(afterPension);
-        String nomPrenom = extractNomPrenom(afterPension, civilite);
-
-        // Adresse : colonnes fixes apres nom/prenom (largeur 33 chacune)
-        String adresse1 = extractAdresse1(afterPension);
-        String adresse2 = extractAdresse2(afterPension);
-
-        // Pays : "99999SUISSE" ou "99999ESPAGNE"
-        String codePays = extractCodePays(line);
-        String pays     = extractPays(line);
-
-        // Date de reference
-        String dateRef = extractDateReference(line);
+        String afterRef  = extractAfterReference(line);
+        String civilite  = extractCivilite(afterRef);
+        String nomPrenom = extractNomPrenom(afterRef, civilite);
+        String adresse1  = extractAdresse1(afterRef);
+        String adresse2  = extractAdresse2(afterRef);
+        String codePays  = extractCodePays(line);
+        String pays      = extractPays(line);
+        String dateRef   = extractDateReference(line);
 
         return AssureDto.builder()
-                .numPension(numPension)
-                .typePension(typePension)
+                .reference(reference)
+                .typeFlux(typeFlux)
                 .civilite(civilite)
                 .nomPrenom(nomPrenom)
                 .adresseLigne1(adresse1)
@@ -56,18 +44,18 @@ public class AssureLineMapper implements LineMapper<AssureDto> {
                 .codePays(codePays)
                 .pays(pays)
                 .dateReference(dateRef)
-                .nir(nir)
+                .identifiant(identifiant)
                 .build();
     }
 
-    private String extractNumPension(String line) {
+    private String extractReference(String line) {
         int debut = line.indexOf('*');
         int fin   = line.indexOf('*', debut + 1);
         if (debut < 0 || fin < 0) return "";
         return line.substring(debut + 1, fin).trim();
     }
 
-    private String extractAfterNumPension(String line) {
+    private String extractAfterReference(String line) {
         int debut = line.indexOf('*');
         int fin   = line.indexOf('*', debut + 1);
         if (fin < 0 || fin + 1 >= line.length()) return "";
@@ -78,15 +66,14 @@ public class AssureLineMapper implements LineMapper<AssureDto> {
         String trimmed = after.trim();
         if (trimmed.startsWith("MME")) return "MME";
         if (trimmed.startsWith("MLE")) return "MLE";
-        if (trimmed.startsWith("M ")) return "M";
+        if (trimmed.startsWith("M "))  return "M";
         return "";
     }
 
     private String extractNomPrenom(String after, String civilite) {
         String trimmed = after.trim();
         int debut = civilite.isEmpty() ? 0 : civilite.length();
-        // Le nom/prenom occupe ~32 chars
-        int fin = Math.min(debut + 32, trimmed.length());
+        int fin   = Math.min(debut + 32, trimmed.length());
         return trimmed.substring(debut, fin).trim();
     }
 
@@ -105,7 +92,6 @@ public class AssureLineMapper implements LineMapper<AssureDto> {
     }
 
     private String extractCodePays(String line) {
-        // Cherche le pattern 5 chiffres (ex: 99999)
         int idx = line.indexOf("99999");
         if (idx < 0) return "";
         return line.substring(idx, Math.min(idx + 5, line.length())).trim();
@@ -120,7 +106,6 @@ public class AssureLineMapper implements LineMapper<AssureDto> {
     }
 
     private String extractDateReference(String line) {
-        // La date est apres le bloc pays, format "01 DECEMBRE 2018"
         int idxPays = line.indexOf("99999");
         if (idxPays < 0) return "";
         int debut = idxPays + 32;
@@ -129,10 +114,10 @@ public class AssureLineMapper implements LineMapper<AssureDto> {
         return line.substring(debut, fin).trim();
     }
 
-    private String extractNir(String line) {
-        if (line.length() < NIR_LENGTH) return "";
-        String nir = line.substring(line.length() - NIR_LENGTH).trim();
-        return nir.isBlank() ? "" : nir;
+    private String extractIdentifiant(String line) {
+        if (line.length() < IDENTIFIANT_LENGTH) return "";
+        String val = line.substring(line.length() - IDENTIFIANT_LENGTH).trim();
+        return val.isBlank() ? "" : val;
     }
 
     private String extractField(String line, int debut, int fin) {

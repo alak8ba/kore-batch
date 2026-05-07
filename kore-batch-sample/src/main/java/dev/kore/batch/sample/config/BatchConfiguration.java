@@ -1,6 +1,8 @@
 package dev.kore.batch.sample.config;
 
+import dev.kore.batch.error.TechnicalException;
 import dev.kore.batch.listener.BatchJobExecutionListener;
+import dev.kore.batch.validator.InputFileValidator;
 import dev.kore.batch.sample.aggregator.IndividuAggregator;
 import dev.kore.batch.sample.dto.AssureDto;
 import dev.kore.batch.sample.dto.AssureResultDto;
@@ -38,10 +40,20 @@ public class BatchConfiguration {
     @Value("${batch.partitioning.grid-size:4}")
     private int gridSize;
 
+    /**
+     * Taille du chunk : 10 items par commit.
+     * Choix justifié : items légers (validation + log), fichier de taille moyenne.
+     * Augmenter si gros volume sans traitement complexe (ex: 100-500).
+     * Réduire à 1 si rollback précis par item requis.
+     */
+    @Value("${batch.chunk-size:10}")
+    private int chunkSize;
+
     @Bean
     public Job traitementIndividusJob(Step partitionStep) {
         return new JobBuilder("traitementIndividusJob", jobRepository)
                 .listener(jobExecutionListener)
+                .validator(new InputFileValidator())
                 .start(partitionStep)
                 .build();
     }
@@ -60,11 +72,15 @@ public class BatchConfiguration {
     @Bean
     public Step workerStep() {
         return new StepBuilder("traitementIndividus-worker", jobRepository)
-                .<AssureDto, AssureResultDto>chunk(10, transactionManager)
+                .<AssureDto, AssureResultDto>chunk(chunkSize, transactionManager)
                 .reader(reader)
                 .processor(processor)
                 .writer(writer)
                 .listener(stepListener)
+                // Pattern fonctionnel : FunctionalException catchee dans le processor (ADR-006)
+                // TechnicalException non catchee -> arret immediat du batch
+                .faultTolerant()
+                .noSkip(TechnicalException.class)
                 .build();
     }
 }

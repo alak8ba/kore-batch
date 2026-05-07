@@ -30,8 +30,8 @@ public class TraitementAssuresStepListener implements StepExecutionListener {
                 synthese.getNbKO(),
                 synthese.getNbErreursFonctionnelles());
 
-            if (!synthese.getNumerosEnErreur().isEmpty()) {
-                log.warn("Individus en erreur : {}", synthese.getNumerosEnErreur());
+            if (!synthese.getReferencesEnErreur().isEmpty()) {
+                log.warn("References en erreur : {}", synthese.getReferencesEnErreur());
             }
         }
         return stepExecution.getExitStatus();

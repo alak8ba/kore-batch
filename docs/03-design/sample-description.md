@@ -1,87 +1,95 @@
-# Description du Sample
+﻿# Description du Sample
 
 ## Objectif
 
-`kore-batch-sample` est un exemple d'utilisation complet du socle `kore-batch`. Il traite des commandes clients en appliquant des règles métier, et produit une synthèse d'exécution.
+`kore-batch-sample` est un exemple d'utilisation complet du socle `kore-batch`.
+Il traite un fichier d'individus au format largeur fixe, valide les donnees,
+persiste les resultats en base PostgreSQL et produit une synthese d'execution.
 
-Il est conçu pour être remplacé par votre propre domaine : la structure reste, le métier change.
+Il est concu pour etre remplace par votre propre domaine : la structure reste, le metier change.
 
-## Cas métier simulé
+## Cas metier simule
 
-Traitement d'un flux de commandes :
-- Lecture d'une liste de commandes (simulée, à remplacer par `FlatFileItemReader` ou `JdbcPagingItemReader`)
-- Validation : clientId non vide, montant strictement positif
-- Enrichissement : mise à jour du statut
-- Persistance : log (à remplacer par `JpaItemWriter` ou `JdbcBatchItemWriter`)
-- Synthèse : comptage OK/KO + liste des références en erreur
+Traitement d'un fichier d'individus au format largeur fixe (ISO-8859-1) :
+- Lecture ligne par ligne via `FlatFileItemReader` + `AssureLineMapper`
+- Validation : reference presente, identifiant 10 chars commencant par 5 ou 6, nom et pays obligatoires
+- Persistance : upsert dans `T_INDIVIDU` via `JdbcBatchItemWriter` (OK et KO)
+- Synthese : comptage OK/KO + liste des references en erreur
 
-## Données de test
+## Donnees de test
 
-Le reader charge 5 commandes dont 2 invalides :
+Fichier `src/test/resources/data/individus_test.txt` - 200 individus fictifs :
 
-| Référence | ClientId | Montant | Statut attendu |
-|---|---|---|---|
-| CMD-001 | CLIENT-A | 150.00 | OK |
-| CMD-002 | CLIENT-B | 75.50 | OK |
-| CMD-003 | (vide) | 200.00 | KO - ClientId manquant |
-| CMD-004 | CLIENT-D | -10.00 | KO - Montant invalide |
-| CMD-005 | CLIENT-E | 300.00 | OK |
+| Cas | Nombre | Detail |
+|---|---|---|
+| Valides (identifiant correct) | 192 | Statut `OK` en base |
+| Sans identifiant (1 sur 25) | 8 | Statut `KO` + message erreur en base |
 
-Résultat attendu : `nbOK=3, nbKO=2, nbErreursFonctionnelles=2`
+Resultat attendu : `nbOK=192, nbKO=8, nbErreursFonctionnelles=8`
 
-## Flux d'exécution
+## Flux d'execution
 
 ```
-Ligne de commande
-    |  --inputFile=/data/commandes.csv
-    v
-SampleBatchApplication.addJobParameters()
+java -jar kore-batch-sample.jar --inputFile=/chemin/fichier
     |
     v
-traitementCommandesJob
+IndividuBatchApplication.addJobParameters()
+    | - valide que inputFile existe (InputFileValidator)
+    | - ajoute timestamp pour nouvelle instance
+    v
+BatchHealthAggregator.checkAll()
+    | - DatabaseHealthIndicator : BDD accessible ?
+    | - FichierSourceHealthIndicator : repertoire source accessible ?
+    | -> Si KO : arret immediat, code retour -1
+    v
+traitementIndividusJob
     |
     v
-traitementCommandes-partition (SimplePartitioner, N threads)
+traitementIndividus-partition (SimplePartitioner, N threads)
     |
-    +-- traitementCommandes-worker [thread 1]
-    |       CommandeItemReader.read()
-    |       CommandeItemProcessor.process()
-    |           --> FunctionalException -> CommandeResultDto.ko()
-    |       CommandeItemWriter.write()
-    |       [synthese stockée dans ExecutionContext]
-    |
-    +-- ... [thread 2..N]
+    +-- traitementIndividus-worker [thread 1..N]
+    |       AssureItemReader.read()        (@StepScope - FlatFileItemReader)
+    |       AssureItemProcessor.process()  (@StepScope)
+    |           --> FunctionalException -> AssureResultDto.ko()
+    |       AssureItemWriter.write()       (JdbcBatchItemWriter - upsert T_INDIVIDU)
+    |       [IndividuSyntheseDto dans ExecutionContext]
     |
     v
-CommandeAggregator.merge()
-    |  fusionne toutes les CommandeSyntheseDto
+IndividuAggregator.merge()
+    | fusionne les IndividuSyntheseDto de chaque partition
     v
-ISynthese stockée dans JobExecutionContext
-    |
+IndividuSyntheseDto (dans JobExecutionContext)
+    | total, nbOK, nbKO, erreursFonctionnelles, referencesEnErreur
     v
 BatchJobExecutionListener.afterJob()
-    |  log : total, OK, KO, erreurs
+    | log : total, OK, KO, erreurs, duree
     v
 BatchLauncher.resolveExitCode()
-    |  System.exit(0 ou -1)
+    | System.exit(0) si OK, System.exit(-1) si erreur technique
 ```
 
-## Modèle de données
+## Modele de donnees
 
 ```sql
--- Table métier créée par Liquibase
-CREATE TABLE T_COMMANDE (
-    ID              BIGINT PRIMARY KEY,
-    REFERENCE       VARCHAR(50) NOT NULL UNIQUE,
-    CLIENT_ID       VARCHAR(100) NOT NULL,
-    MONTANT         DECIMAL(15,2) NOT NULL,
-    DATE_COMMANDE   DATE NOT NULL,
-    STATUT          VARCHAR(20) NOT NULL,
-    DATE_TRAITEMENT TIMESTAMP
+-- Table metier cree par Liquibase (v1.0.0/02-create-individu-table.xml)
+CREATE TABLE T_INDIVIDU (
+    ID              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    NUM_REFERENCE   VARCHAR(20)  NOT NULL UNIQUE,
+    TYPE_REFERENCE  VARCHAR(10),
+    IDENTIFIANT     VARCHAR(10),
+    CIVILITE        VARCHAR(10),
+    NOM_PRENOM      VARCHAR(80),
+    ADRESSE_LIGNE1  VARCHAR(38),
+    ADRESSE_LIGNE2  VARCHAR(38),
+    CODE_PAYS       VARCHAR(5),
+    PAYS            VARCHAR(27),
+    DATE_REFERENCE  VARCHAR(20),
+    STATUT          VARCHAR(10)  NOT NULL,   -- OK ou KO
+    DATE_TRAITEMENT TIMESTAMP,
+    MESSAGE_ERREUR  VARCHAR(500)
 );
 
--- Tables Spring Batch (métadonnées)
--- Créées par : 01-spring-batch-schema.xml
+-- Tables Spring Batch (metadonnees - crees par 01-spring-batch-schema.xml)
 BATCH_JOB_INSTANCE
 BATCH_JOB_EXECUTION
 BATCH_JOB_EXECUTION_PARAMS
