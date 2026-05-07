@@ -15,10 +15,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public abstract class AbstractIntegrationTest {
 
     static {
-        // Fix Docker Desktop WSL2 sur Windows : force le socket TCP
-        if (System.getenv("DOCKER_HOST") == null) {
-            System.setProperty("DOCKER_HOST", "tcp://localhost:2375");
-        }
         System.setProperty("TESTCONTAINERS_RYUK_DISABLED", "true");
     }
 
