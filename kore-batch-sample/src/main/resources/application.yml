@@ -11,11 +11,6 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
-  datasource:
-    url: jdbc:postgresql://localhost:5432/batchdb
-    driver-class-name: org.postgresql.Driver
-    username: batch_user
-    password: batch_pass
   jpa:
     hibernate:
       ddl-auto: none
@@ -28,5 +23,5 @@ batch:
 
 logging:
   level:
-    fr.kore.batch: DEBUG
+    fr.kore.batch: INFO
     org.springframework.batch: INFO

@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/batchdb
+    driver-class-name: org.postgresql.Driver
+    username: batch_user
+    password: batch_pass
+
+logging:
+  level:
+    fr.kore.batch: DEBUG
+    org.springframework.batch: DEBUG
+    org.springframework.jdbc: DEBUG

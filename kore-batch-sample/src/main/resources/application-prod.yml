@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: ${DB_URL}
+    driver-class-name: org.postgresql.Driver
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+
+batch:
+  partitioning:
+    pool-size: 8
+    queue-capacity: 100
+    grid-size: 8
+
+logging:
+  level:
+    fr.kore.batch: INFO
+    org.springframework.batch: WARN
+  file:
+    name: /var/log/kore-batch/kore-batch-sample.log
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30

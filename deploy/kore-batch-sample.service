@@ -1,0 +1,27 @@
+[Unit]
+Description=Kore Batch Sample
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=kore-batch
+Group=kore-batch
+
+WorkingDirectory=/opt/kore-batch
+
+Environment="SPRING_PROFILES_ACTIVE=prod"
+Environment="DB_URL=jdbc:postgresql://localhost:5432/batchdb"
+Environment="DB_USER=batch_user"
+Environment="DB_PASSWORD=batch_pass"
+
+ExecStart=/usr/bin/java -jar /opt/kore-batch/kore-batch-sample.jar
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=kore-batch-sample
+
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
