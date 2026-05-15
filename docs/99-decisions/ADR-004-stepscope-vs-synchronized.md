@@ -2,11 +2,11 @@
 
 ## Source
 
-Echange technique avec des experts Spring Batch le 6 mai 2026. Cet echange a permis d'identifier des axes d'amelioration sur le socle original developpe en production (2017-2021) et d'apporter les correctifs documentés dans cet ADR.
+Echange technique avec des experts Spring Batch le 6 mai 2026. Cet echange a permis d'identifier des axes d'amelioration sur le socle original developpe en production (2018-2021) et d'apporter les correctifs documentés dans cet ADR.
 
 ## Contexte
 
-Le socle original (2017-2021) implémentait le reader avec un mécanisme
+Le socle original (2018-2021) implémentait le reader avec un mécanisme
 `synchronized` pour gérer la concurrence entre les partitions parallèles.
 
 Le reader était un bean Spring singleton. Avec le partitioning (N threads),
