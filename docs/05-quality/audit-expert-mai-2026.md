@@ -3,7 +3,7 @@
 **Date :** 6 mai 2026
 **Contexte :** Echange technique avec des experts Spring Batch sur le socle kore-batch.
 Cet échange a permis d'identifier plusieurs axes d'amélioration sur le socle original
-développé en production entre 2017 et 2021.
+développé en production entre 2018 et 2021.
 
 ---
 

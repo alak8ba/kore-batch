@@ -6,7 +6,7 @@ Modernisation du socle kore-batch (mai 2026) - migration depuis Java 8
 
 ## Contexte
 
-Le socle original était développé sous Java 8 (2017-2021).
+Le socle original était développé sous Java 8 (2018-2021).
 Java 21 est la dernière version LTS (Long Term Support) disponible en 2024-2026.
 
 La migration directe Java 8 -> Java 21 est risquée. Le chemin recommandé

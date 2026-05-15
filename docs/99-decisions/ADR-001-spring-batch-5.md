@@ -2,11 +2,11 @@
 
 ## Source
 
-Modernisation du socle kore-batch - migration de production (2017-2021) vers Java 21 / Spring Boot 3.3
+Modernisation du socle kore-batch - migration de production (2018-2021) vers Java 21 / Spring Boot 3.3
 
 ## Contexte
 
-Le socle original (2017-2021) était basé sur Spring Batch 4 / Spring Boot 2.1. Spring Batch 5, sorti avec Spring Boot 3, introduit des changements d'API non rétrocompatibles.
+Le socle original (2018-2021) était basé sur Spring Batch 4 / Spring Boot 2.1. Spring Batch 5, sorti avec Spring Boot 3, introduit des changements d'API non rétrocompatibles.
 
 ## Décision
 
