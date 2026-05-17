@@ -1,4 +1,4 @@
-﻿<p align="center">
+<p align="center">
   <img src="assets/logo-kore-batch.svg" alt="kore-batch logo" width="200"/>
 </p>
 
@@ -14,7 +14,23 @@
 
 **K** comme Kouba. **ORE** comme core, le socle.
 
-KORE est un écosystème de socles Java open source. `kore-batch` est la brique dédiée au traitement batch : extraction, transformation, chargement de données en masse, avec gestion des erreurs fonctionnelles, partitionnement parallèle et reporting d'exécution.
+Ce n'est pas un acronyme inventé après coup. Le nom est venu naturellement : une identité derrière, une philosophie devant. Construire des fondations solides avant de construire des fonctionnalités. Penser architecture avant code.
+
+**KORE** est un écosystème de socles Java open source, destiné à la communauté.
+
+---
+
+## L'écosystème KORE
+
+Chaque brique suit la même logique : extraite ou construite sur une base réelle, documentée, testée, utile.
+
+| Brique | Description | Statut |
+|---|---|---|
+| [kore-hexagonal](https://github.com/alak8ba/kore-hexagonal) | Architecture hexagonale • 1,5 an de production réelle • 658 commits | Disponible |
+| **[kore-batch](https://github.com/alak8ba/kore-batch)** | Traitement batch • plusieurs années de production • fort volume de données | Disponible |
+| [kore-genie](https://github.com/alak8ba/kore-genie) | Socle IA privée & RAG • déploiement on-premise • zéro donnée sortante | En cours |
+| kore-stream | Traitement de flux temps réel | Prévu |
+| kore-react | Composants frontend réutilisables | Prévu |
 
 ---
 
