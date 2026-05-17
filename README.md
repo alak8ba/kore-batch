@@ -1,4 +1,8 @@
-﻿# KORE BATCH
+﻿<p align="center">
+  <img src="assets/logo-kore-batch.svg" alt="kore-batch logo" width="200"/>
+</p>
+
+# KORE BATCH
 
 > Socle Spring Batch extrait de plusieurs années de production réelle.
 > Conçu entre 2018 et 2021 sur des projets à fort volume de données, remis à niveau en 2025.
