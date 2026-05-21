@@ -29,6 +29,7 @@ Chaque brique suit la même logique : extraite ou construite sur une base réell
 | [kore-hexagonal](https://github.com/alak8ba/kore-hexagonal) | Architecture hexagonale • 1,5 an de production réelle • 658 commits | Disponible |
 | **[kore-batch](https://github.com/alak8ba/kore-batch)** | Traitement batch • plusieurs années de production • fort volume de données | Disponible |
 | [kore-genie](https://github.com/alak8ba/kore-genie) | Socle IA privée & RAG • déploiement on-premise • zéro donnée sortante | Disponible |
+| [kore-n8n](https://github.com/alak8ba/kore-n8n) | Automatisation self-hosted • n8n • Docker • Traefik • Let's Encrypt | Disponible |
 | kore-stream | Traitement de flux temps réel | Prévu |
 | kore-react | Composants frontend réutilisables | Prévu |
 
