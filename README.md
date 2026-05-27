@@ -30,6 +30,10 @@ Chaque brique suit la même logique : extraite ou construite sur une base réell
 | **[kore-batch](https://github.com/alak8ba/kore-batch)** | Traitement batch • plusieurs années de production • fort volume de données | Disponible |
 | [kore-genie](https://github.com/alak8ba/kore-genie) | Socle IA privée & RAG • déploiement on-premise • zéro donnée sortante | Disponible |
 | [kore-n8n](https://github.com/alak8ba/kore-n8n) | Automatisation self-hosted • n8n • Docker • Traefik • Let's Encrypt | Disponible |
+| [kore-traefik](https://github.com/alak8ba/kore-traefik) | Reverse proxy mutualisé • TLS + sécurité transverse au proxy | Disponible |
+| [kore-monitoring](https://github.com/alak8ba/kore-monitoring) | Observabilité VPS • Prometheus + Loki + Grafana + Alertmanager | Disponible |
+| [kore-watchtower](https://github.com/alak8ba/kore-watchtower) | Mises à jour auto des conteneurs Docker opt-in par label | Disponible |
+| [kore-backup](https://github.com/alak8ba/kore-backup) | Snapshots chiffrés (restic) vers stockage distant + drill | Disponible |
 | kore-stream | Traitement de flux temps réel | Prévu |
 | kore-react | Composants frontend réutilisables | Prévu |
 
